@@ -11,4 +11,4 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 
 include_directories(eigen)
 
-add_executable(davidson davidson.cpp)
+add_executable(davidson main.cpp)

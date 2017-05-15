@@ -1,58 +1,11 @@
-#include <algorithm>
-#include <iostream>
-#include <tuple>
-using namespace std;
+#ifndef DAVIDSON_HPP_
+#define DAVIDSON_HPP_
 
-#include <Eigen/Eigenvalues>
+#include <iomanip>
+#include <iostream>
 
 #include "basis.hpp"
-#include "random.hpp"
-
-template <typename Value>
-auto compute_eigensystem(const Matrix<Value>& matrix)
-{
-    using Solver =
-        typename std::conditional<IsComplex<Value>::value, Eigen::ComplexEigenSolver<Matrix<Value>>,
-                                  Eigen::EigenSolver<Matrix<Value>>>::type;
-    using Complex = typename IsComplex<Value>::ComplexType;
-
-    Solver solver;
-    solver.compute(matrix);
-
-    const auto eigenvalues  = solver.eigenvalues();
-    const auto eigenvectors = solver.eigenvectors();
-
-    std::vector<EigenPair<Complex>> pairs(eigenvalues.rows());
-    for(int i = 0; i < eigenvalues.rows(); ++i) {
-        pairs[i].val = eigenvalues(i);
-        pairs[i].vec = eigenvectors.col(i);
-    }
-
-    return pairs;
-}
-
-template <typename Value>
-auto compute_eigensystem_hermitian(const Matrix<Value>& matrix)
-{
-    using Solver = Eigen::SelfAdjointEigenSolver<Matrix<Value>>;
-    using Float  = typename IsComplex<Value>::FloatType;
-
-    Solver solver;
-    solver.compute(matrix);
-
-    const auto eigenvalues  = solver.eigenvalues();
-    const auto eigenvectors = solver.eigenvectors();
-
-    EigenSystem<Float> pairs(eigenvalues.rows());
-    for(int i = 0; i < eigenvalues.rows(); ++i) {
-        pairs[i].val = eigenvalues(i);
-        pairs[i].vec = eigenvectors.col(i);
-    }
-
-    pairs.sort();
-
-    return pairs;
-}
+#include "diagonalize.hpp"
 
 template <typename Value>
 auto compute_rayleigh_ritz_pairs_hermitian(const Matrix<Value>& A, const Matrix<Value>& V)
@@ -125,7 +78,8 @@ auto apply_davidson_hermitian(const Matrix<Value>& A, int k,
 
         // exit if residual is small enough
         auto norm = r.norm();
-        clog << "iter: " << j << "\tresidual: " << norm << "\teigenval: " << theta << '\n';
+        clog << "iter: " << j << "\n\tresidual: " << norm << "\n\teigenval: " << setprecision(14)
+             << theta << "\n\n";
         if(norm <= tol) return EigenPair<double>{theta, y};
     }
 
@@ -134,8 +88,4 @@ auto apply_davidson_hermitian(const Matrix<Value>& A, int k,
     return EigenPair<double>{theta, y};
 }
 
-int main()
-{
-    const auto A = generate_random_hermitian_matrix<double>(1024, 1024);
-    cout << apply_davidson_hermitian(A, 200, 1.1e4, 1e-11, 200) << '\n';
-}
+#endif
