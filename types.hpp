@@ -2,6 +2,7 @@
 #define TYPES_HPP_
 
 #include <algorithm>
+#include <cmath>
 #include <complex>
 #include <ostream>
 #include <type_traits>
@@ -20,15 +21,15 @@ using Basis = std::vector<Vector<Value>>;
 
 template <typename Value>
 struct IsComplex {
-    using FloatType = Value;
-    using ComplexType = std::complex<Value>;
+    using FloatType             = Value;
+    using ComplexType           = std::complex<Value>;
     static constexpr bool value = false;
 };
 
 template <typename Float>
 struct IsComplex<std::complex<Float>> {
-    using FloatType = Float;
-    using ComplexType = std::complex<Float>;
+    using FloatType             = Float;
+    using ComplexType           = std::complex<Float>;
     static constexpr bool value = true;
 };
 
@@ -49,18 +50,43 @@ template <typename Value>
 struct EigenSystem : public std::vector<EigenPair<Value>> {
     using std::vector<EigenPair<Value>>::vector;
 
-    void sort() {
+    void sort()
+    {
         static_assert(!IsComplex<Value>::value, "complex numbers cannot be ordered");
         std::sort(
             this->begin(), this->end(),
             [](const EigenPair<Value>& a, const EigenPair<Value>& b) { return a.val < b.val; });
     }
 
-    auto minimal_eigenvalue_pair() const
+
+    auto minimal_eigenvalue_pair()
     {
-        return *std::min_element(
+        return std::min_element(
             this->begin(), this->end(),
             [](const EigenPair<Value>& a, const EigenPair<Value>& b) { return a.val < b.val; });
+    }
+    auto minimal_eigenvalue_pair() const
+    {
+        return std::min_element(
+            this->begin(), this->end(),
+            [](const EigenPair<Value>& a, const EigenPair<Value>& b) { return a.val < b.val; });
+    }
+
+    auto find_best_matching_pair(const Value& eigenvalue)
+    {
+        return std::min_element(
+            this->begin(), this->end(),
+            [&eigenvalue](const EigenPair<Value>& a, const EigenPair<Value>& b) {
+                return std::norm(a.val - eigenvalue) < std::norm(b.val - eigenvalue);
+            });
+    }
+    auto find_best_matching_pair(const Value& eigenvalue) const
+    {
+        return std::min_element(
+            this->begin(), this->end(),
+            [&eigenvalue](const EigenPair<Value>& a, const EigenPair<Value>& b) {
+                return std::norm(a.val - eigenvalue) < std::norm(b.val - eigenvalue);
+            });
     }
 };
 
