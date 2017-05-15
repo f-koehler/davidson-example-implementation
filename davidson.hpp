@@ -40,7 +40,7 @@ auto apply_davidson_hermitian(const Matrix<Value>& A, int k,
     for(int i = 0; i < A.rows(); ++i) I(i) = 1.;
 
     // construct initial trial space
-    auto P = generate_orthonormal_basis_matrix<double>(A.rows(), k);
+    auto P = generate_orthonormal_basis_matrix<Value>(A.rows(), k);
 
     // compute all Rayleigh-Ritz-Pairs of the initial trial space
     auto pairs = compute_rayleigh_ritz_pairs_hermitian(A, P);
@@ -55,7 +55,7 @@ auto apply_davidson_hermitian(const Matrix<Value>& A, int k,
     Vector<Value> r = A * y - theta * y;
 
     // check for the unlikely case that the RR-eigenvalue is accurate
-    if(r.norm() <= tol) return EigenPair<Value>{theta, y};
+    if(r.norm() <= tol) return EigenPair<Float, Value>{theta, y};
 
     // perform iterations
     for(int j = 0; j < max_iter; ++j) {
@@ -78,14 +78,14 @@ auto apply_davidson_hermitian(const Matrix<Value>& A, int k,
 
         // exit if residual is small enough
         auto norm = r.norm();
-        clog << "iter: " << j << "\n\tresidual: " << norm << "\n\teigenval: " << setprecision(14)
-             << theta << "\n\n";
-        if(norm <= tol) return EigenPair<double>{theta, y};
+        std::clog << "iter: " << j << "\n\tresidual: " << norm
+                  << "\n\teigenval: " << std::setprecision(14) << theta << "\n\n";
+        if(norm <= tol) return EigenPair<Float, Value>{theta, y};
     }
 
-    cerr << "reached max_iter without converging" << '\n';
+    std::cerr << "reached max_iter without converging" << '\n';
 
-    return EigenPair<double>{theta, y};
+    return EigenPair<Float, Value>{theta, y};
 }
 
 #endif

@@ -87,15 +87,17 @@ generate_random_hermitian_matrix(int rows, int cols, Value min = -10., Value max
 
 template <typename Value>
 typename std::enable_if<IsComplex<Value>::value, Matrix<Value>>::type
-generate_random_hermitian_matrix(int rows, int cols, Value min = -10., Value max = 10.)
+generate_random_hermitian_matrix(int rows, int cols,
+                                 typename IsComplex<Value>::FloatType min = -10.,
+                                 typename IsComplex<Value>::FloatType max = 10.)
 {
     Matrix<Value> matrix(rows, cols);
-    std::uniform_real_distribution<Value> dist(min, max);
+    std::uniform_real_distribution<typename IsComplex<Value>::FloatType> dist(min, max);
     auto& prng = get_random_number_generator();
     for(int i = 0; i < rows; ++i) {
         for(int j = 0; j < i; ++j) {
             matrix(i, j) = Value{dist(prng), dist(prng)};
-            matrix(j, i) = matrix(i, j).conj();
+            matrix(j, i) = std::conj(matrix(i, j));
         }
         matrix(i, i) = dist(prng);
     }

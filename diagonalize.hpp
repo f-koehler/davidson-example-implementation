@@ -3,6 +3,8 @@
 
 #include <Eigen/Eigenvalues>
 
+#include "types.hpp"
+
 template <typename Value>
 auto compute_eigensystem(const Matrix<Value>& matrix)
 {
@@ -38,7 +40,7 @@ auto compute_eigensystem_hermitian(const Matrix<Value>& matrix)
     const auto eigenvalues  = solver.eigenvalues();
     const auto eigenvectors = solver.eigenvectors();
 
-    EigenSystem<Float> pairs(eigenvalues.rows());
+    EigenSystem<Float, Value> pairs(eigenvalues.rows());
     for(int i = 0; i < eigenvalues.rows(); ++i) {
         pairs[i].val = eigenvalues(i);
         pairs[i].vec = eigenvectors.col(i);

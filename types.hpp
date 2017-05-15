@@ -5,8 +5,11 @@
 #include <cmath>
 #include <complex>
 #include <ostream>
+#include <string>
 #include <type_traits>
 #include <vector>
+
+#include <typeinfo>
 
 #include <Eigen/Dense>
 
@@ -33,29 +36,29 @@ struct IsComplex<std::complex<Float>> {
     static constexpr bool value = true;
 };
 
-template <typename Value>
+template <typename Value, typename VectorValue = Value>
 struct EigenPair {
     Value val;
-    Vector<Value> vec;
+    Vector<VectorValue> vec;
 };
 
-template <typename Value>
-std::ostream& operator<<(std::ostream& strm, const EigenPair<Value>& pair)
+template <typename Value, typename VectorValue = Value>
+std::ostream& operator<<(std::ostream& strm, const EigenPair<VectorValue>& pair)
 {
     strm << pair.val << " :\t" << pair.vec.transpose();
     return strm;
 }
 
-template <typename Value>
-struct EigenSystem : public std::vector<EigenPair<Value>> {
-    using std::vector<EigenPair<Value>>::vector;
+template <typename Value, typename VectorValue = Value>
+struct EigenSystem : public std::vector<EigenPair<Value, VectorValue>> {
+    using std::vector<EigenPair<Value, VectorValue>>::vector;
 
     void sort()
     {
         static_assert(!IsComplex<Value>::value, "complex numbers cannot be ordered");
-        std::sort(
-            this->begin(), this->end(),
-            [](const EigenPair<Value>& a, const EigenPair<Value>& b) { return a.val < b.val; });
+        std::sort(this->begin(), this->end(),
+                  [](const EigenPair<Value, VectorValue>& a,
+                     const EigenPair<Value, VectorValue>& b) { return a.val < b.val; });
     }
 
 
@@ -63,28 +66,32 @@ struct EigenSystem : public std::vector<EigenPair<Value>> {
     {
         return std::min_element(
             this->begin(), this->end(),
-            [](const EigenPair<Value>& a, const EigenPair<Value>& b) { return a.val < b.val; });
+            [](const EigenPair<Value, VectorValue>& a, const EigenPair<Value, VectorValue>& b) {
+                return a.val < b.val;
+            });
     }
     auto minimal_eigenvalue_pair() const
     {
         return std::min_element(
             this->begin(), this->end(),
-            [](const EigenPair<Value>& a, const EigenPair<Value>& b) { return a.val < b.val; });
+            [](const EigenPair<Value, VectorValue>& a, const EigenPair<Value, VectorValue>& b) {
+                return a.val < b.val;
+            });
     }
 
     auto find_best_matching_pair(const Value& eigenvalue)
     {
         return std::min_element(
-            this->begin(), this->end(),
-            [&eigenvalue](const EigenPair<Value>& a, const EigenPair<Value>& b) {
+            this->begin(), this->end(), [&eigenvalue](const EigenPair<Value, VectorValue>& a,
+                                                      const EigenPair<Value, VectorValue>& b) {
                 return std::norm(a.val - eigenvalue) < std::norm(b.val - eigenvalue);
             });
     }
     auto find_best_matching_pair(const Value& eigenvalue) const
     {
         return std::min_element(
-            this->begin(), this->end(),
-            [&eigenvalue](const EigenPair<Value>& a, const EigenPair<Value>& b) {
+            this->begin(), this->end(), [&eigenvalue](const EigenPair<Value, VectorValue>& a,
+                                                      const EigenPair<Value, VectorValue>& b) {
                 return std::norm(a.val - eigenvalue) < std::norm(b.val - eigenvalue);
             });
     }
