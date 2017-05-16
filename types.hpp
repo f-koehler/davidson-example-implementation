@@ -20,6 +20,9 @@ template <typename Value>
 using Matrix = Eigen::Matrix<Value, Eigen::Dynamic, Eigen::Dynamic>;
 
 template <typename Value>
+using DiagonalMatrix = Eigen::DiagonalMatrix<Value, Eigen::Dynamic, Eigen::Dynamic>;
+
+template <typename Value>
 using Basis = std::vector<Vector<Value>>;
 
 template <typename Value>

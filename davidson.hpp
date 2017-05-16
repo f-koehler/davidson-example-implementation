@@ -33,9 +33,12 @@ auto apply_davidson_hermitian(const Matrix<Value>& A, int k,
     using Float = typename IsComplex<Value>::FloatType;
 
     // construct diagonal matrix
+    /* DiagonalMatrix<Value> D(A); */
     Vector<Value> D = A.diagonal();
 
     // construct identity matrix
+    /* DiagonalMatrix<Value> I(A); */
+    /* I.setIdentity(); */
     auto I = Vector<Value>(A.rows());
     for(int i = 0; i < A.rows(); ++i) I(i) = 1.;
 
@@ -49,6 +52,7 @@ auto apply_davidson_hermitian(const Matrix<Value>& A, int k,
     auto pos   = pairs.find_best_matching_pair(val);
     auto theta = pos->val;
     auto y     = pos->vec;
+
     pairs.clear();
 
     // compute residual vector
@@ -71,7 +75,6 @@ auto apply_davidson_hermitian(const Matrix<Value>& A, int k,
         pos   = pairs.find_best_matching_pair(val);
         theta = pos->val;
         y     = pos->vec;
-        pairs.clear();
 
         // compute the residual
         r = A * y - theta * y;

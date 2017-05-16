@@ -99,7 +99,7 @@ generate_random_hermitian_matrix(int rows, int cols,
             matrix(i, j) = Value{dist(prng), dist(prng)};
             matrix(j, i) = std::conj(matrix(i, j));
         }
-        matrix(i, i) = dist(prng);
+        matrix(i, i) = Value{dist(prng), 0.};
     }
     return matrix;
 }
