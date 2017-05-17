@@ -1,6 +1,8 @@
 #ifndef TYPES_HPP_
 #define TYPES_HPP_
 
+#define EIGEN_USE_MKL_ALL
+
 #include <algorithm>
 #include <cmath>
 #include <complex>
@@ -21,9 +23,6 @@ using Matrix = Eigen::Matrix<Value, Eigen::Dynamic, Eigen::Dynamic>;
 
 template <typename Value>
 using DiagonalMatrix = Eigen::DiagonalMatrix<Value, Eigen::Dynamic, Eigen::Dynamic>;
-
-template <typename Value>
-using Basis = std::vector<Vector<Value>>;
 
 template <typename Value>
 struct IsComplex {
@@ -56,12 +55,13 @@ template <typename Value, typename VectorValue = Value>
 struct EigenSystem : public std::vector<EigenPair<Value, VectorValue>> {
     using std::vector<EigenPair<Value, VectorValue>>::vector;
 
-    void sort()
+    auto& sort()
     {
         static_assert(!IsComplex<Value>::value, "complex numbers cannot be ordered");
         std::sort(this->begin(), this->end(),
                   [](const EigenPair<Value, VectorValue>& a,
                      const EigenPair<Value, VectorValue>& b) { return a.val < b.val; });
+        return *this;
     }
 
 

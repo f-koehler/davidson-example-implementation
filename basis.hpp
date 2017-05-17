@@ -3,59 +3,40 @@
 
 #include "types.hpp"
 
-template <typename Value>
-Vector<Value> project(Vector<Value> u, Vector<Value> v)
-{
-    return (v.dot(u) / u.dot(u)) * v;
-}
+#include <Eigen/SVD>
 
 template <typename Value>
-void orthonormalize(Basis<Value>& basis)
+void orthnormalize_gs(Matrix<Value>& V)
 {
-    const auto size = basis.size();
+    const auto size = V.cols();
     for(std::size_t i = 1; i < size; ++i) {
-        const auto v = basis[i];
+        const auto v = V.col(i);
         for(std::size_t j = 0; j < i; ++j) {
-            basis[i] -= project(basis[j], v);
+            V.col(i) -= (v.dot(V.col(j)) / V.col(j).dot(V.col(j))) * V.col(j);
         }
     }
 
     for(std::size_t i = 0; i < size; ++i) {
-        basis[i] /= basis[i].norm();
+        V.col(i) /= V.col(i).norm();
     }
 }
 
 template <typename Value>
-void orthonormalize(Matrix<Value>& matrix)
+void orthnormalize_mgs(Matrix<Value>& V)
 {
-    const auto size = matrix.cols();
+    Matrix<Value> U = V;
+    const auto size = V.cols();
+
+    U.col(0) = V.col(0) / std::sqrt(V.col(0).dot(V.col(0)));
     for(std::size_t i = 1; i < size; ++i) {
-        const auto v = matrix.col(i);
+        U.col(i) = V.col(i);
         for(std::size_t j = 0; j < i; ++j) {
-            /* matrix.col(i) -= project(matrix.col(j), v); */
-            matrix.col(i) -=
-                (v.dot(matrix.col(j)) / matrix.col(j).dot(matrix.col(j))) * matrix.col(j);
+            U.col(i) -= (U.col(i).dot(U.col(j)) / U.col(j).dot(U.col(j))) * U.col(j);
         }
+        U.col(i) /= std::sqrt(U.col(i).dot(U.col(i)));
     }
 
-    for(std::size_t i = 0; i < size; ++i) {
-        matrix.col(i) /= matrix.col(i).norm();
-    }
-}
-
-template <typename Value>
-Basis<Value> generate_orthonormal_basis(int dimension, std::size_t basis_size)
-{
-    if(basis_size > dimension) {
-        throw std::domain_error("basis_size must be smaller than or equal to dimension");
-    }
-
-    Basis<Value> basis(basis_size, Vector<Value>::Zero(dimension));
-    for(std::size_t i = 0; i < basis_size; ++i) {
-        basis[i](i) = 1.;
-    }
-    orthonormalize(basis);
-    return basis;
+    V = U;
 }
 
 template <typename Value>
@@ -69,7 +50,7 @@ Matrix<Value> generate_orthonormal_basis_matrix(int dimension, std::size_t basis
     for(std::size_t i = 0; i < basis_size; ++i) {
         V(i, i) = 1.;
     }
-    orthonormalize(V);
+    orthnormalize_mgs(V);
     return V;
 }
 

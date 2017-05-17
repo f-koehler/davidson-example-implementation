@@ -9,17 +9,19 @@ using namespace std;
 
 int main()
 {
-    const auto A = generate_random_hermitian_matrix<double>(2000, 2000);
+    const auto A = generate_random_hermitian_matrix<double>(15000, 15000);
 
     StopWatch watch_davidson;
-    const auto result_davidson = apply_davidson_hermitian(A, 100, 513., 1e-11, 300);
+    const auto result_davidson = apply_davidson_hermitian(A, 10, 1e-10, 500);
     watch_davidson.stop();
 
-    StopWatch watch_exact;
-    const auto result_exact = compute_eigensystem_hermitian(A);
-    watch_exact.stop();
+    cout << "Davidson:\n\ttime:\t" << watch_davidson << "\n\tresult:\t" << setprecision(14)
+         << result_davidson.val << '\n';
 
-    cout << "Davidson:\n\ttime:\t" << watch_davidson << "\n\tresult:\t" << result_davidson.val
-         << '\n';
-    cout << "Exact:\n\ttime:\t" << watch_exact << "\n";
+    StopWatch watch_full;
+    const auto result_full = compute_eigensystem_hermitian(A)[0];
+    watch_full.stop();
+
+    cout << "Full:\n\ttime:\t" << watch_full << "\n\tresult:\t" << setprecision(14)
+         << result_full.val << '\n';
 }

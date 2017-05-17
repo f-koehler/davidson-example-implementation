@@ -39,6 +39,14 @@ generate_random_vector(int dimensions, typename Value::value_type min = -10.,
 }
 
 template <typename Value>
+auto generate_random_unit_vector(int dimensions)
+{
+    auto v = generate_random_vector<Value>(dimensions);
+    v /= std::sqrt(v.dot(v));
+    return v;
+}
+
+template <typename Value>
 typename std::enable_if<!IsComplex<Value>::value, Matrix<Value>>::type
 generate_random_matrix(int rows, int cols, Value min = -10., Value max = 10.)
 {
