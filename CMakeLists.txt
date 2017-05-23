@@ -20,5 +20,5 @@ include_directories(eigen)
 link_directories($ENV{MKLROOT}/lib/intel64)
 include_directories($ENV{MKLROOT}/include)
 
-add_executable(davidson main.cpp)
-target_link_libraries(davidson mkl_intel_lp64 mkl_intel_thread mkl_core iomp5 pthread m dl)
+add_executable(lowest lowest.cpp)
+target_link_libraries(lowest mkl_intel_lp64 mkl_intel_thread mkl_core iomp5 pthread m dl)

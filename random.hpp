@@ -3,6 +3,7 @@
 
 #include <random>
 
+#include "basis.hpp"
 #include "types.hpp"
 
 auto& get_random_number_generator()

@@ -6,7 +6,6 @@
 
 #include "basis.hpp"
 #include "diagonalize.hpp"
-#include "random.hpp"
 
 template <typename Value>
 auto compute_rayleigh_ritz_pairs_hermitian(const Matrix<Value>& A, const Matrix<Value>& V,
@@ -39,6 +38,7 @@ auto apply_davidson_hermitian(const Matrix<Value>& A, int initial_space_size,
 
     // generate initial trial space
     auto P = generate_orthonormal_basis_matrix<Value>(A.rows(), initial_space_size);
+    /* auto P = generate_random_basis_matrix<Value>(A.rows(), initial_space_size); */
 
     // construct diagonal matrix
     /* DiagonalMatrix<Value> D(A); */
@@ -66,7 +66,7 @@ auto apply_davidson_hermitian(const Matrix<Value>& A, int initial_space_size,
         // extend trial space
         P.conservativeResize(P.rows(), P.cols() + 1);
         P.col(P.cols() - 1) = (D - smallest.val * I).asDiagonal().inverse() * r;
-        orthnormalize_mgs(P);
+        orthonormalize_mgs(P);
     }
 
     std::cerr << "reached max_iter without converging" << '\n';
