@@ -1,8 +1,8 @@
 #ifndef BASIS_HPP_
 #define BASIS_HPP_
 
-#include "types.hpp"
 #include "orthogonalization.hpp"
+#include "types.hpp"
 
 template <typename Value>
 bool is_orthonormal_basis_matrix(const Matrix<Value>& matrix,

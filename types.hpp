@@ -67,7 +67,7 @@ struct EigenSystem : public std::vector<EigenPair<Value, VectorValue>> {
 
     auto minimal_eigenvalue_pair()
     {
-        return std::min_element(
+        return *std::min_element(
             this->begin(), this->end(),
             [](const EigenPair<Value, VectorValue>& a, const EigenPair<Value, VectorValue>& b) {
                 return a.val < b.val;
@@ -75,7 +75,7 @@ struct EigenSystem : public std::vector<EigenPair<Value, VectorValue>> {
     }
     auto minimal_eigenvalue_pair() const
     {
-        return std::min_element(
+        return *std::min_element(
             this->begin(), this->end(),
             [](const EigenPair<Value, VectorValue>& a, const EigenPair<Value, VectorValue>& b) {
                 return a.val < b.val;

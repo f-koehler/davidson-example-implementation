@@ -4,9 +4,10 @@
 #include "types.hpp"
 
 template <typename Value>
-void orthonormalize_cgs(Matrix<Value>& V)
+void orthonormalize_cgs(Matrix<Value>& V, int columns = 0)
 {
-    const auto size = V.cols();
+    const auto size = !columns ? V.cols() : columns;
+
     for(std::size_t i = 1; i < size; ++i) {
         const auto v = V.col(i);
         for(std::size_t j = 0; j < i; ++j) {
@@ -20,10 +21,10 @@ void orthonormalize_cgs(Matrix<Value>& V)
 }
 
 template <typename Value>
-void orthonormalize_mgs(Matrix<Value>& V)
+void orthonormalize_mgs(Matrix<Value>& V, int columns = 0)
 {
     Matrix<Value> U = V;
-    const auto size = V.cols();
+    const auto size = !columns ? V.cols() : columns;
 
     U.col(0) = V.col(0) / std::sqrt(V.col(0).dot(V.col(0)));
     for(std::size_t i = 1; i < size; ++i) {
