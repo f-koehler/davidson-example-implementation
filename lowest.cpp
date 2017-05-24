@@ -10,10 +10,10 @@ using namespace std;
 
 int main()
 {
-    const auto A = generate_random_hermitian_matrix<double>(200, 200);
+    const auto A = generate_random_hermitian_matrix<double>(10, 10);
 
     StopWatch watch_davidson;
-    const auto result_davidson = apply_davidson_hermitian(A, 10, 1e-10, 500);
+    const auto result_davidson = apply_davidson_hermitian(A, 1e-10, 500);
     watch_davidson.stop();
 
     StopWatch watch_lanczos;

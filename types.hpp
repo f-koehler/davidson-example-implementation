@@ -1,7 +1,7 @@
 #ifndef TYPES_HPP_
 #define TYPES_HPP_
 
-#define EIGEN_USE_MKL_ALL
+/* #define EIGEN_USE_MKL_ALL */
 
 #include <algorithm>
 #include <cmath>
@@ -37,6 +37,48 @@ struct IsComplex<std::complex<Float>> {
     using ComplexType           = std::complex<Float>;
     static constexpr bool value = true;
 };
+
+template <typename Number>
+typename std::enable_if<IsComplex<Number>::value, typename IsComplex<Number>::FloatType>::type
+get_real_part(const Number& n)
+{
+    return n.real();
+}
+
+template <typename Number>
+typename std::enable_if<!IsComplex<Number>::value, Number>::type
+get_real_part(const Number& n)
+{
+    return n;
+}
+
+template <typename Number>
+typename std::enable_if<IsComplex<Number>::value, typename IsComplex<Number>::FloatType>::type
+get_imaginary_part(const Number& n)
+{
+    return n.imag();
+}
+
+template <typename Number>
+typename std::enable_if<!IsComplex<Number>::value, Number>::type
+get_imaginary_part(const Number& n)
+{
+    return 0.;
+}
+
+template <typename Number>
+typename std::enable_if<IsComplex<Number>::value, typename IsComplex<Number>::FloatType>::type
+get_conjugate(const Number& n)
+{
+    return std::conj(n);
+}
+
+template <typename Number>
+typename std::enable_if<!IsComplex<Number>::value, Number>::type
+get_conjugate(const Number& n)
+{
+    return n;
+}
 
 template <typename Value, typename VectorValue = Value>
 struct EigenPair {
